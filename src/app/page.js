@@ -1,101 +1,443 @@
-import Image from "next/image";
+"use client";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
+import ICONS from "@/assets";
+import CustomCTA from "@/components/CustomCTA";
+import Header from "@/components/header";
+import { useState } from "react";
+import styled from "styled-components";
+import { motion, AnimatePresence } from "motion/react";
+import BandCarousel, {
+  DescriptionDisplay,
+  PriceDisplay,
+  SideViewDisplay,
+  WatchNameDisplay
+} from "@/components/BandCarousel";
+import { bandData, casesData, collectionData, sizeData } from "@/utils/contantData";
+import bandICon from "../assets/band.svg";
+import caseIcon from "../assets/case.svg";
+import sizeIcon from "../assets/size.svg";
+import CaseCarousel from "@/components/CaseCarousel";
+import SizeCarousel from "@/components/SizeCarousel";
+
+export const DescriptionContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  margin-top: 15px;
+  top: 29rem;
+  @media (min-width: 1024px, max-width: 1205px) {
+    margin-top: 210px;
+    top: 16rem;
+  }
+  @media (max-width: 1024px) {
+    margin-top: 210px;
+    top: 29rem;
+  }
+  @media (max-width: 768px) {
+    margin-top: -110px;
+    top: 29rem;
+  }
+  @media (max-width: 480px) {
+    margin-top: -110px;
+    top: 29rem;
+  }
+`;
+
+
+const Wrapper = styled.section`
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  justify-content: center;
+  font-family: sans-serif;
+  text-align: left;
+  white-space: nowrap;
+  // padding: 50px 150px 0px 150px;
+`;
+
+const WrapperText = styled.section`
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  justify-content: center;
+  font-family: sans-serif;
+  text-align: left;
+  padding: 58px 0px 0px 407px;
+  margin-bottom: -5px @media (max-width: 1200px) {
+    padding: 120px 0px 0px 150px;
+  }
+  @media (max-width: 1024px) {
+    padding: 120px 0px 0px 100px;
+  }
+  @media (max-width: 768px) {
+    padding: 120px 0px 0px 100px;
+  }
+  @media (max-width: 480px) {
+    padding: 40px 0px 40px 40px;
+  }
+`;
+
+const UpperText = styled.section`
+  color: #1d1d1f;
+  font-family: sans-serif;
+  font-size: 21px;
+  font-weight: 400;
+  letter-spacing: 0.011em;
+  line-height: 1.381002381;
+  padding-bottom: 10px;
+  text-align: left;
+`;
+
+const MainText = styled.section`
+  font-family: sans-serif;
+  font-size: 62px;
+  font-weight: 600;
+  letter-spacing: -0.009em;
+  line-height: 1.0625;
+  padding: 0px 0px 40px 0px;
+
+  @media (max-width: 1200px) {
+    font-size: 64px;
+  }
+  @media (max-width: 768px) {
+    font-size: 38px;
+  }
+  @media (max-width: 480px) {
+    font-size: 28px;
+  }
+`;
+
+const ImageWrapper = styled.section`
+  position: relative;
+  width: 723px;
+  height: 723px;
+  margin: -98px auto;
+
+  @media (max-width: 1200px) {
+    width: 723px;
+    height: 723px;
+    margin: 50px auto;
+  }
+  @media (max-width: 768px) {
+    width: 423px;
+    height: 423px;
+    margin: 50px auto;
+  }
+  @media (max-width: 480px) {
+    margin: 50px auto;
+    width: 323px;
+    height: 323px;
+  }
+`;
+
+const ImageLayer = styled.img`
+  position: absolute;
+  display: flex;
+  top: 100px;
+  left: 0;
+  width: 100%;
+  height: 100%;
+`;
+
+const ButtonComponent = styled.section`
+  // position: fixed;
+  margin: 0 10px;
+  top: 87%;
+  left: 37%;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  font-family: sans-serif;
+  gap: 18px;
+`;
+
+const FadeWrapper = styled(motion.div)`
+  width: 100%;
+  text-align: center;
+`;
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.js
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+  const [actionOpen, setActionOpen] = useState(false);
+  const [animate, setAnimate] = useState(false);
+  const [visibleCarousel, setVisibleCarousel] = useState("");
+  const [carouselIndex, setCarouselIndex] = useState(0);
+  const [watchName, setWatchName] = useState("Apple Watch Series 10");
+  const [showSideView, setShowSideView] = useState(false);
+  const [descriptionContainer, setdescriptionContainer] = useState(true);
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
+
+
+  const handleSetName = (text) => {
+    setWatchName(text);
+  };
+
+  const arrBtn = [
+    {
+      text: "Apple Watch Series 10",
+      active: true,
+      isVisible: true,
+      color: "#000",
+      iconHeight: "16px",
+      iconWidth: "16px",
+      onClick: () => handleSetName("Apple Watch Series 10"),
+    },
+    {
+      text: "Apple Watch Hermès Series 10",
+      active: true,
+      isVisible: true,
+      color: "#000",
+      iconHeight: "16px",
+      iconWidth: "16px",
+      onClick: () => handleSetName("Apple Watch Hermès Series 10"),
+    },
+    {
+      text: "Apple Watch SE",
+      active: true,
+      isVisible: true,
+      color: "#000",
+      iconHeight: "16px",
+      iconWidth: "16px",
+      onClick: () => handleSetName("Apple Watch SE"),
+    },
+  ];
+
+  const handleClick = () => {
+    setAnimate(true);
+  };
+
+  const handleShowBands = (text) => {
+    setVisibleCarousel(text);
+    setdescriptionContainer(false);
+  };
+  return (
+    <>
+      <Header
+        actionOpen={actionOpen}
+        animate={animate}
+        arrBtn={arrBtn}
+        setActionOpen={setActionOpen}
+        setVisibleCarousel={setVisibleCarousel}
+        setdescriptionContainer={setdescriptionContainer}
+      />
+      <Wrapper>
+        {!animate && (
+          <WrapperText>
+            <UpperText>Apple Watch Studio</UpperText>
+            <MainText>
+              Choose a case. <br />
+              Pick a band.
+              <br />
+              Create your own style.
+            </MainText>
+            <CustomCTA
+              title="Get started"
+              bgColor="#0071e3"
+              color="#fff"
+              fontSize="18px"
+              padding="12px"
+              borderRadius="25px"
+              buttonWidth="130px"
+              onClick={handleClick}
             />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+          </WrapperText>
+        )}
+
+        {visibleCarousel === "" && (
+          <motion.div
+            className="box relative"
+            whileHover="hover"
+            animate={animate ? { y: -120, scale: 0.5 } : { y: 0, scale: 1 }}
+            transition={{ duration: 2, ease: "easeInOut" }}
           >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+            <AnimatePresence mode="wait">
+              <FadeWrapper
+                key={watchName}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.8 }}
+              >
+                <ImageWrapper className="relative">
+                  <div>
+                    {/* <ImageLayer
+                  src={bandData[carouselIndex]}
+                  alt={`fffff`}
+                /> */}
+                  </div>
+
+                  {ICONS.BAND_1 && (
+                    <motion.div
+                      initial={animate && { x: "40%" }}
+                      animate={animate && { x: 0 }}
+                      transition={animate && {
+                        duration: 0.8,
+                        delay: 0,
+                        ease: "easeOut"
+                      }}
+                      style={{
+                        position: "absolute",
+                        top: 0,
+                        left: 0,
+                        width: "100%",
+                        height: "100%",
+                        zIndex: 1
+                      }}
+                    >
+                      <ImageLayer
+                        src={collectionData[watchName]?.bandSrcFront || ICONS.BAND_1}
+                        alt="Watch Band"
+                      />
+                    </motion.div>
+                  )}
+
+                  {/* Watch Dial (Now with higher z-index) */}
+                  {ICONS.APPLE_CASE_ALUMINUM_BLACK && (
+                    <div style={{
+                      position: "absolute",
+                      top: 0,
+                      left: 0,
+                      width: "100%",
+                      height: "100%",
+                      zIndex: 2
+                    }}>
+                      <ImageLayer
+                        src={
+                          showSideView
+                            ? collectionData[watchName]?.watchsideview || ICONS.WATCH_BLACK_SIDE_VIEW
+                            : collectionData[watchName]?.dialsrcFront || ICONS.APPLE_CASE_ALUMINUM_BLACK
+                        }
+                        alt="Apple Case Aluminum Black"
+                      />
+                    </div>
+                  )}
+                </ImageWrapper>
+              </FadeWrapper>
+            </AnimatePresence>
+          </motion.div>
+        )
+        }
+
+        {visibleCarousel === "Band" && (
+          <motion.div
+            className="box"
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 50 }}
+            transition={{ duration: 0.8, ease: "easeInOut" }}
+          >
+            <BandCarousel
+              images={bandData}
+              watchName={watchName}
+              setShowSideView={setShowSideView}
+              showSideView={showSideView}
+              descriptionContainer={descriptionContainer}
+            />
+          </motion.div>
+        )}
+
+        {visibleCarousel === "Case" && (
+          <motion.div
+            className="box"
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 50 }}
+            transition={{ duration: 0.8, ease: "easeInOut" }}
+          >
+            <CaseCarousel images={casesData} watchName={watchName} descriptionContainer={descriptionContainer}/>
+          </motion.div>
+        )}
+
+        {visibleCarousel === "Size" && (
+          <motion.div
+            className="box"
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 50 }}
+            transition={{ duration: 0.8, ease: "easeInOut" }}
+          >
+            <SizeCarousel images={sizeData} watchName={watchName} />
+          </motion.div>
+        )}
+
+        {animate ? (
+          <motion.div
+            className="box"
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 50 }}
+            transition={{ duration: 2, ease: "easeInOut" }}
+          >
+            {descriptionContainer ? (
+              <DescriptionContainer style={{ position: "absolute", width: "100vw" }}>
+                <AnimatePresence mode="wait">
+                  <FadeWrapper
+                    key={watchName}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.8 }}
+                  >
+                    <SideViewDisplay
+                      style={{ color: "#06c", fontWeight: 600 }}
+                      onClick={() => setShowSideView(!showSideView)}
+                    >
+                      {showSideView ? <u>Front view</u> : <u>Side view</u>}
+                    </SideViewDisplay>
+                    <WatchNameDisplay>
+                      {watchName}
+                    </WatchNameDisplay>
+                    <DescriptionDisplay>
+                      {collectionData[watchName]?.description || "No description available"}
+                    </DescriptionDisplay>
+                    <PriceDisplay>
+                      From ${collectionData[watchName]?.price || "N/A"}
+                    </PriceDisplay>
+                  </FadeWrapper>
+                </AnimatePresence>
+              </DescriptionContainer>
+            ): ""}
+
+            <ButtonComponent>
+              <CustomCTA
+                title="Size"
+                showIcon={true}
+                url={sizeIcon}
+                bgColor="#e8e8ed"
+                color="#1d1d1f"
+                fontSize="18px"
+                padding="12px"
+                borderRadius="25px"
+                buttonWidth="130px"
+                onClick={() => handleShowBands("Size")}
+              />
+              <CustomCTA
+                title="Case"
+                showIcon={true}
+                url={caseIcon}
+                bgColor="#e8e8ed"
+                color="#1d1d1f"
+                fontSize="18px"
+                padding="12px"
+                borderRadius="25px"
+                buttonWidth="130px"
+                onClick={() => handleShowBands("Case")}
+              />
+              <CustomCTA
+                title="Band"
+                showIcon={true}
+                url={bandICon}
+                bgColor="#e8e8ed"
+                color="#1d1d1f"
+                fontSize="18px"
+                padding="12px"
+                borderRadius="25px"
+                buttonWidth="130px"
+                onClick={() => handleShowBands("Band")}
+              />
+            </ButtonComponent>
+          </motion.div>
+        ): ""}
+      </Wrapper>
+    </>
   );
 }
